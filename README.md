@@ -31,7 +31,7 @@ download .apk, try it on your android phone: https://drive.google.com/file/d/185
  
  Editor
  ------------
- 2019.4.15f1
+ 2020.3.41f1
  
  Note
  -------------

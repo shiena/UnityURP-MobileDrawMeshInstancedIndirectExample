@@ -111,3 +111,4 @@ Material:
     - _WindCDirection: {r: 0.7, g: -0.1, b: 0, a: 1}
     - _WindCTiling: {r: 0.77, g: 3, b: 0, a: 1}
     - _WindCWrap: {r: 0.5, g: 0.5, b: 0, a: 1}
+  m_BuildTextureStacks: []
