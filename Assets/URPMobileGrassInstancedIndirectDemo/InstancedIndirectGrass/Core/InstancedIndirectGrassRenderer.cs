@@ -34,9 +34,9 @@ public class InstancedIndirectGrassRenderer : MonoBehaviour
     private int instanceCountCache = -1;
     private Mesh cachedGrassMesh;
 
-    private ComputeBuffer allInstancesPosWSBuffer;
-    private ComputeBuffer visibleInstancesOnlyPosWSIDBuffer;
-    private ComputeBuffer argsBuffer;
+    private GraphicsBuffer allInstancesPosWSBuffer;
+    private GraphicsBuffer visibleInstancesOnlyPosWSIDBuffer;
+    private GraphicsBuffer argsBuffer;
 
     private List<Vector3>[] cellPosWSsList; //for binning: binning will put each posWS into correct cell
     private float minX, minZ, maxX, maxZ;
@@ -140,7 +140,7 @@ public class InstancedIndirectGrassRenderer : MonoBehaviour
         // Final 1 big DrawMeshInstancedIndirect draw call 
         //====================================================================================
         // GPU per instance culling finished, copy visible count to argsBuffer, to setup DrawMeshInstancedIndirect's draw amount 
-        ComputeBuffer.CopyCount(visibleInstancesOnlyPosWSIDBuffer, argsBuffer, 4);
+        GraphicsBuffer.CopyCount(visibleInstancesOnlyPosWSIDBuffer, argsBuffer, 4);
 
         // Render 1 big drawcall using DrawMeshInstancedIndirect    
         Bounds renderBound = new Bounds();
@@ -224,11 +224,11 @@ public class InstancedIndirectGrassRenderer : MonoBehaviour
         ///////////////////////////
         if (allInstancesPosWSBuffer != null)
             allInstancesPosWSBuffer.Release();
-        allInstancesPosWSBuffer = new ComputeBuffer(allGrassPos.Count, sizeof(float)*3); //float3 posWS only, per grass
+        allInstancesPosWSBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, allGrassPos.Count, sizeof(float)*3); //float3 posWS only, per grass
 
         if (visibleInstancesOnlyPosWSIDBuffer != null)
             visibleInstancesOnlyPosWSIDBuffer.Release();
-        visibleInstancesOnlyPosWSIDBuffer = new ComputeBuffer(allGrassPos.Count, sizeof(uint), ComputeBufferType.Append); //uint only, per visible grass
+        visibleInstancesOnlyPosWSIDBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Append, allGrassPos.Count, sizeof(uint)); //uint only, per visible grass
 
         //find all instances's posWS XZ bound min max
         minX = float.MaxValue;
@@ -290,7 +290,7 @@ public class InstancedIndirectGrassRenderer : MonoBehaviour
         if (argsBuffer != null)
             argsBuffer.Release();
         uint[] args = new uint[5] { 0, 0, 0, 0, 0 };
-        argsBuffer = new ComputeBuffer(1, args.Length * sizeof(uint), ComputeBufferType.IndirectArguments);
+        argsBuffer = new GraphicsBuffer(GraphicsBuffer.Target.IndirectArguments, 1, args.Length * sizeof(uint));
 
         args[0] = (uint)GetGrassMeshCache().GetIndexCount(0);
         args[1] = (uint)allGrassPos.Count;
